@@ -14,6 +14,11 @@
     <header class="app-header">
       <div class="header-inner">
         <h1 class="app-title">ManyVids Divest</h1>
+        <div class="update-banner" id="update-banner" hidden>
+          <span id="update-banner-text">A new version is available.</span>
+          <a id="update-link" href="https://github.com/queueingqt/MVdivest/releases" target="_blank">Download update →</a>
+          <button class="update-dismiss" id="update-dismiss" aria-label="Dismiss">✕</button>
+        </div>
         <div class="phase-indicator">
           <span class="phase-dot" id="dot-1" data-phase="1">1</span>
           <span class="phase-label" id="lbl-1">Fetch Catalogue</span>
@@ -223,7 +228,7 @@
         <div class="phase-intro">
           <h2>Step 5 — Request Account Deletion</h2>
           <a class="btn btn-danger btn-request-deletion"
-             href="mailto:help@manyvids.com?subject=Account%20Deletion%20Request&body=Hello%20ManyVids%20Team%2C%0A%0AI%20am%20writing%20to%20formally%20request%20the%20deletion%20of%20my%20ManyVids%20account.%0A%0AI%20confirm%20the%20following%3A%0A%0A%E2%80%A2%20Outstanding%20orders%3A%20%5BState%20%22None%22%20or%20list%20any%20outstanding%20store%20item%20or%20custom%20vid%20orders%5D%0A%E2%80%A2%20Payment%20method%3A%20My%20payment%20method%20is%20set%20up%20to%20receive%20my%20final%20payment.%0A%0APlease%20let%20me%20know%20if%20you%20need%20any%20further%20information%20to%20process%20this%20request.%0A%0AThank%20you."
+             href="mailto:help@manyvids.com?subject=Account%20Deletion%20Request&body=Hello%20ManyVids%20Team%2C%0D%0A%0D%0AI%20am%20writing%20to%20formally%20request%20the%20deletion%20of%20my%20ManyVids%20account.%0D%0A%0D%0AI%20confirm%20the%20following%3A%0D%0A%0D%0A%E2%80%A2%20Outstanding%20orders%3A%20%5BState%20%22None%22%20or%20list%20any%20outstanding%20store%20item%20or%20custom%20vid%20orders%5D%0D%0A%E2%80%A2%20Payment%20method%3A%20My%20payment%20method%20is%20set%20up%20to%20receive%20my%20final%20payment.%0D%0A%0D%0APlease%20let%20me%20know%20if%20you%20need%20any%20further%20information%20to%20process%20this%20request.%0D%0A%0D%0AThank%20you."
              style="margin-top:16px">
             Email ManyVids to Delete Account &rarr;
           </a>
@@ -231,9 +236,34 @@
           <div class="social-share">
             <h3>Spread the word</h3>
             <p>Let your audience know where to find you next.</p>
-            <div class="social-share-btns">
-              <button class="btn btn-secondary" id="btn-tweet">Post on X (Twitter)</button>
-              <button class="btn btn-secondary" id="btn-insta-story">Download Instagram Story</button>
+            <div class="social-share-cards">
+
+              <!-- X / Twitter -->
+              <div class="share-card">
+                <div class="share-preview share-preview-tweet">
+                  <div class="tweet-mock">
+                    <div class="tweet-mock-header">
+                      <div class="tweet-mock-avatar"></div>
+                      <div class="tweet-mock-meta">
+                        <span class="tweet-mock-name">You</span>
+                        <span class="tweet-mock-handle">&nbsp;· now</span>
+                      </div>
+                      <span class="tweet-mock-x-logo">𝕏</span>
+                    </div>
+                    <p class="tweet-mock-text" id="tweet-preview-text"></p>
+                  </div>
+                </div>
+                <button class="btn btn-secondary share-card-btn" id="btn-tweet">Post on X (Twitter)</button>
+              </div>
+
+              <!-- Instagram Story -->
+              <div class="share-card">
+                <div class="share-preview share-preview-insta">
+                  <canvas id="insta-story-preview" width="1080" height="1920"></canvas>
+                </div>
+                <button class="btn btn-secondary share-card-btn" id="btn-insta-story">Download Instagram Story</button>
+              </div>
+
             </div>
           </div>
         </div>

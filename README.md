@@ -25,13 +25,15 @@ MV Divest is a local Chrome extension — it is not published to the Chrome Web 
 
 ### Steps
 
-1. **Download or clone this repository**
+1. **Download the latest release**
+
+   Go to the [latest release](https://github.com/queueingqt/MVdivest/releases/latest) and download the `.zip` file, then unzip it anywhere on your computer.
+
+   Alternatively, clone the repository:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/mvdl.git
+   git clone https://github.com/queueingqt/MVdivest.git
    ```
-
-   Or download the ZIP from GitHub and unzip it anywhere on your computer.
 
 2. **Open Chrome Extensions**
 

@@ -43,6 +43,7 @@ function setPhase(num) {
   }
 
   if (num === 1) checkLogin();
+  if (num === 5) renderSocialPreviews();
 }
 
 // Returns how many videos in the catalogue have not been verified as downloaded
@@ -845,16 +846,14 @@ document.getElementById('btn-go-close-account').addEventListener('click', () => 
 
 // ─── Phase 5: Social Share ────────────────────────────────────────────────────
 
-document.getElementById('btn-tweet').addEventListener('click', () => {
+function getTweetText() {
   const count = allVideos.length;
   const countStr = count > 0 ? `${count} video${count !== 1 ? 's' : ''}` : 'my content';
-  const text = `Just deleted ${countStr} from ManyVids and requested account deletion. Taking back control of my content 💜\n\nUsed MV Divest to back everything up first.`;
-  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-});
+  return `Just deleted ${countStr} from ManyVids and requested account deletion. Taking back control of my content 💜\n\nUsed MV Divest to back everything up first.`;
+}
 
-document.getElementById('btn-insta-story').addEventListener('click', () => {
+function drawStoryCanvas(canvas) {
   const W = 1080, H = 1920;
-  const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
@@ -909,8 +908,6 @@ document.getElementById('btn-insta-story').addEventListener('click', () => {
 
   // Video count line
   const count = allVideos.length;
-  ctx.fillStyle = '#8888a0';
-  ctx.font = `56px 'Helvetica Neue', Arial, sans-serif`;
   if (count > 0) {
     ctx.fillStyle = '#e8e8ef';
     ctx.font = `bold 66px 'Helvetica Neue', Arial, sans-serif`;
@@ -919,6 +916,8 @@ document.getElementById('btn-insta-story').addEventListener('click', () => {
     ctx.font = `52px 'Helvetica Neue', Arial, sans-serif`;
     ctx.fillText('& removed from ManyVids', W / 2, 1240);
   } else {
+    ctx.fillStyle = '#8888a0';
+    ctx.font = `56px 'Helvetica Neue', Arial, sans-serif`;
     ctx.fillText('Backed up & removed from ManyVids', W / 2, 1150);
   }
 
@@ -937,7 +936,20 @@ document.getElementById('btn-insta-story').addEventListener('click', () => {
   ctx.fillStyle = '#8888a0';
   ctx.font = `40px 'Helvetica Neue', Arial, sans-serif`;
   ctx.fillText('manyvids content backup tool', W / 2, 1720);
+}
 
+function renderSocialPreviews() {
+  document.getElementById('tweet-preview-text').textContent = getTweetText();
+  drawStoryCanvas(document.getElementById('insta-story-preview'));
+}
+
+document.getElementById('btn-tweet').addEventListener('click', () => {
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(getTweetText())}`, '_blank');
+});
+
+document.getElementById('btn-insta-story').addEventListener('click', () => {
+  const canvas = document.createElement('canvas');
+  drawStoryCanvas(canvas);
   const link = document.createElement('a');
   link.download = 'mv-divest-story.png';
   link.href = canvas.toDataURL('image/png');
@@ -1252,9 +1264,45 @@ async function checkLogin() {
 
 document.getElementById('btn-recheck-login').addEventListener('click', () => checkLogin());
 
+// ─── Update check ─────────────────────────────────────────────────────────────
+
+async function checkForUpdates() {
+  try {
+    const current = chrome.runtime.getManifest().version;
+    const resp = await fetch('https://api.github.com/repos/queueingqt/MVdivest/releases/latest', {
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const latest = (data.tag_name || '').replace(/^v/, '');
+    if (!latest) return;
+
+    const a = latest.split('.').map(Number);
+    const b = current.split('.').map(Number);
+    let newer = false;
+    for (let i = 0; i < 3; i++) {
+      if ((a[i] || 0) > (b[i] || 0)) { newer = true; break; }
+      if ((a[i] || 0) < (b[i] || 0)) break;
+    }
+    if (!newer) return;
+
+    const banner = document.getElementById('update-banner');
+    document.getElementById('update-banner-text').textContent = `v${latest} is available (you have v${current}).`;
+    document.getElementById('update-link').href = data.html_url || 'https://github.com/queueingqt/MVdivest/releases';
+    banner.hidden = false;
+
+    document.getElementById('update-dismiss').addEventListener('click', () => {
+      banner.hidden = true;
+    });
+  } catch (_) {
+    // Silently ignore — no update check on network failure
+  }
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 (async () => {
+  checkForUpdates();
   const restored = await loadFromStorage();
   if (!restored) {
     setPhase(1);
