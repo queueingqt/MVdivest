@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ManyVids Divest</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <h1 class="app-title">ManyVids Divest</h1>
+        <div class="phase-indicator">
+          <span class="phase-dot" id="dot-1" data-phase="1">1</span>
+          <span class="phase-label" id="lbl-1">Fetch Catalogue</span>
+          <span class="phase-sep">›</span>
+          <span class="phase-dot" id="dot-2" data-phase="2">2</span>
+          <span class="phase-label" id="lbl-2">Review</span>
+          <span class="phase-sep">›</span>
+          <span class="phase-dot" id="dot-3" data-phase="3">3</span>
+          <span class="phase-label" id="lbl-3">Download</span>
+          <span class="phase-sep">›</span>
+          <span class="phase-dot" id="dot-4" data-phase="4">4</span>
+          <span class="phase-label" id="lbl-4">Delete</span>
+          <span class="phase-sep">›</span>
+          <span class="phase-dot" id="dot-5" data-phase="5">5</span>
+          <span class="phase-label" id="lbl-5">Close Account</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="status-bar">
+      <span id="status-text">Ready. Click "Fetch Catalogue" to begin.</span>
+      <span id="status-counts" class="status-counts"></span>
+    </div>
+
+    <!-- Phase panels -->
+    <main class="app-main">
+
+      <!-- ── Phase 1: Fetch ─────────────────────────── -->
+      <section class="phase-panel" id="panel-1">
+        <div class="phase-intro">
+          <h2>Step 1 — Fetch Your Catalogue</h2>
+          <p>
+            The extension will open a background tab on your ManyVids Content Manager and scrape
+            all video titles and edit-page URLs across every page.
+          </p>
+          <div class="login-check-row" id="login-check-row">
+            <span id="login-status-icon" class="login-status-icon">⋯</span>
+            <span id="login-status-text" class="muted">Checking ManyVids login…</span>
+            <a id="login-link" href="https://www.manyvids.com/Login/" target="_blank" class="btn btn-secondary btn-sm" hidden>Log in to ManyVids →</a>
+            <button class="btn btn-secondary btn-sm" id="btn-recheck-login" hidden>Re-check</button>
+          </div>
+          <button class="btn btn-primary" id="btn-fetch" style="margin-top:16px" disabled>
+            Fetch Catalogue
+          </button>
+        </div>
+        <div class="progress-area" id="fetch-progress" hidden>
+          <div class="spinner"></div>
+          <span id="fetch-progress-text">Starting…</span>
+        </div>
+      </section>
+
+      <!-- ── Phase 2: Review & Enrich ───────────────── -->
+      <section class="phase-panel" id="panel-2" hidden>
+        <div class="phase-header-row">
+          <div>
+            <h2>Step 2 — Review</h2>
+            <p>
+              Verify the video list looks correct.
+              Then click <strong>Fetch Details →</strong> — the extension will open each
+              video's <em>Edit</em> page in a background tab and extract the description,
+              keywords, and download link. This takes a few seconds per video.
+              Deselect any videos you don't want to download before proceeding.
+            </p>
+          </div>
+          <div class="action-group">
+            <button class="btn btn-secondary" id="btn-rescan-2">Re-scan &amp; Merge</button>
+            <button class="btn btn-secondary" id="btn-clear-cache">Clear Cache</button>
+            <span id="selection-count" class="muted"></span>
+            <button class="btn btn-secondary" id="btn-select-all">Select All</button>
+            <button class="btn btn-secondary" id="btn-deselect-all">Deselect All</button>
+            <button class="btn btn-primary" id="btn-fetch-details">
+              Fetch Details from Edit Pages →
+            </button>
+            <button class="btn btn-primary" id="btn-proceed-downloads" hidden disabled>
+              Proceed to Downloads →
+            </button>
+          </div>
+        </div>
+
+        <div class="progress-area" id="details-progress" hidden>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="details-progress-fill"></div>
+          </div>
+          <span id="details-progress-text">Fetching…</span>
+        </div>
+
+        <!-- Video table -->
+        <div class="table-wrap">
+          <table class="video-table" id="video-table">
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" id="check-all" checked></th>
+                <th class="col-num">#</th>
+                <th class="col-title">Title</th>
+                <th class="col-price">Price</th>
+                <th class="col-views">Views</th>
+                <th class="col-purchases">Purchases</th>
+                <th class="col-date">Published</th>
+                <th class="col-desc">Description</th>
+                <th class="col-kw">Keywords</th>
+                <th class="col-url">Download URL</th>
+                <th class="col-status">Status</th>
+                <th class="col-refetch"></th>
+              </tr>
+            </thead>
+            <tbody id="video-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Phase 3: Downloads ─────────────────────── -->
+      <section class="phase-panel" id="panel-3" hidden>
+        <div class="phase-header-row">
+          <div>
+            <h2>Step 3 — Downloads</h2>
+            <p>
+              Downloads run in the background (max 4 at once). The CSV is saved automatically
+              when all downloads complete. You can also export it early.
+            </p>
+          </div>
+          <div class="action-group">
+            <button class="btn btn-pause" id="btn-pause-downloads" hidden>Pause</button>
+            <button class="btn btn-stop"  id="btn-stop-downloads"  hidden>Stop</button>
+            <button class="btn btn-restart" id="btn-restart-downloads" hidden>Restart Downloads</button>
+            <button class="btn btn-secondary" id="btn-export-csv">Export CSV Now</button>
+            <button class="btn btn-primary" id="btn-go-delete" hidden>Delete from ManyVids →</button>
+          </div>
+        </div>
+
+        <!-- Download folder selection -->
+        <div class="download-options" id="download-options">
+          <button class="btn btn-secondary" id="btn-choose-folder">Choose Folder…</button>
+          <span id="selected-folder-name" class="option-label muted">No folder selected</span>
+          <button class="btn btn-primary" id="btn-start-downloads" disabled>Start Downloads</button>
+        </div>
+
+        <div class="download-stats">
+          <div class="stat-box">
+            <span class="stat-num" id="stat-active">0</span>
+            <span class="stat-lbl">Active</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-queued">0</span>
+            <span class="stat-lbl">Queued</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-done">0</span>
+            <span class="stat-lbl">Done</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-num" id="stat-errors">0</span>
+            <span class="stat-lbl">Errors</span>
+          </div>
+        </div>
+
+        <!-- Download table -->
+        <div class="table-wrap">
+          <table class="video-table" id="dl-table">
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th class="col-title">Title</th>
+                <th class="col-filename">Saved Filename</th>
+                <th class="col-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="dl-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Phase 4: Delete ────────────────────────── -->
+      <section class="phase-panel" id="panel-4" hidden>
+        <div class="phase-header-row">
+          <div style="flex:1">
+            <h2>Step 4 — Delete from ManyVids</h2>
+            <p>
+              The videos below were successfully downloaded and verified. Use the delete buttons
+              to permanently remove them from your ManyVids catalogue. This action cannot be undone.
+            </p>
+          </div>
+          <div class="action-group">
+            <button class="btn btn-danger" id="btn-delete-all">Delete All</button>
+            <button class="btn btn-primary" id="btn-go-close-account">Close Account &rarr;</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="video-table" id="delete-table">
+            <thead>
+              <tr>
+                <th class="col-num">#</th>
+                <th class="col-title">Title</th>
+                <th class="col-filename">Saved Filename</th>
+                <th class="col-status">Verification</th>
+                <th class="col-action">Action</th>
+              </tr>
+            </thead>
+            <tbody id="delete-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Phase 5: Close Account ─────────────────── -->
+      <section class="phase-panel" id="panel-5" hidden>
+        <div class="phase-intro">
+          <h2>Step 5 — Request Account Deletion</h2>
+          <a class="btn btn-danger btn-request-deletion"
+             href="mailto:help@manyvids.com?subject=Account%20Deletion%20Request&body=Hello%20ManyVids%20Team%2C%0A%0AI%20am%20writing%20to%20formally%20request%20the%20deletion%20of%20my%20ManyVids%20account.%0A%0AI%20confirm%20the%20following%3A%0A%0A%E2%80%A2%20Outstanding%20orders%3A%20%5BState%20%22None%22%20or%20list%20any%20outstanding%20store%20item%20or%20custom%20vid%20orders%5D%0A%E2%80%A2%20Payment%20method%3A%20My%20payment%20method%20is%20set%20up%20to%20receive%20my%20final%20payment.%0A%0APlease%20let%20me%20know%20if%20you%20need%20any%20further%20information%20to%20process%20this%20request.%0A%0AThank%20you."
+             style="margin-top:16px">
+            Email ManyVids to Delete Account &rarr;
+          </a>
+
+          <div class="social-share">
+            <h3>Spread the word</h3>
+            <p>Let your audience know where to find you next.</p>
+            <div class="social-share-btns">
+              <button class="btn btn-secondary" id="btn-tweet">Post on X (Twitter)</button>
+              <button class="btn btn-secondary" id="btn-insta-story">Download Instagram Story</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

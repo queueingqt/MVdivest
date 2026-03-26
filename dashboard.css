@@ -1,0 +1,323 @@
+/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+:root {
+  --bg:          #0f0f11;
+  --surface:     #1a1a1f;
+  --surface2:    #22222a;
+  --border:      #2e2e38;
+  --accent:      #e05cbf;
+  --accent-dim:  #a03588;
+  --text:        #e8e8ef;
+  --text-dim:    #8888a0;
+  --success:     #4ecb71;
+  --warning:     #f0c040;
+  --error:       #f05050;
+  --info:        #5090f0;
+  --radius:      8px;
+  --font:        'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
+
+a { color: var(--accent); }
+
+/* ─── App Shell ────────────────────────────────────────────────────────────── */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.app-title {
+  font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: -0.3px;
+}
+
+/* Phase indicator */
+.phase-indicator {
+  display: flex; align-items: center; gap: 8px; font-size: 13px;
+}
+.phase-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 12px;
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text-dim);
+  transition: all .2s;
+}
+.phase-dot.active  { background: var(--accent); border-color: var(--accent); color: #fff; }
+.phase-dot.done    { background: var(--success); border-color: var(--success); color: #fff; }
+.phase-label { color: var(--text-dim); font-size: 12px; }
+.phase-label.active { color: var(--text); }
+.phase-sep { color: var(--border); }
+
+/* ─── Status Bar ───────────────────────────────────────────────────────────── */
+.status-bar {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--text-dim);
+  min-height: 32px;
+}
+.status-counts { font-weight: 600; color: var(--accent); }
+
+/* ─── Main ─────────────────────────────────────────────────────────────────── */
+.app-main { flex: 1; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* ─── Phase Panels ─────────────────────────────────────────────────────────── */
+.phase-panel { animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.phase-intro h2,
+.phase-header-row h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.phase-intro p,
+.phase-header-row p { color: var(--text-dim); line-height: 1.6; margin-bottom: 20px; }
+
+.phase-header-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+  padding: 8px 18px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; transition: background .15s, opacity .15s;
+}
+.btn-primary  { background: var(--accent); color: #fff; }
+.btn-primary:hover  { background: #c94daa; }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-refetch-details { background: var(--surface2); color: var(--warning); border: 1px solid var(--warning); }
+.btn-refetch-details:hover { background: rgba(240,192,64,.15); }
+.btn-pause   { background: rgba(240,192,64,.15); color: var(--warning); border: 1px solid var(--warning); }
+.btn-pause:hover   { background: rgba(240,192,64,.3); }
+.btn-stop    { background: rgba(240,80,80,.15);  color: var(--error);   border: 1px solid var(--error); }
+.btn-stop:hover    { background: rgba(240,80,80,.3); }
+.btn-restart { background: rgba(80,144,240,.15); color: var(--info);    border: 1px solid var(--info); }
+.btn-restart:hover { background: rgba(80,144,240,.3); }
+
+.action-group { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+/* ─── Progress ─────────────────────────────────────────────────────────────── */
+.progress-area {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px;
+  margin-bottom: 16px; font-size: 13px; color: var(--text-dim);
+}
+.progress-bar-wrap {
+  flex: 1; height: 6px; background: var(--surface2);
+  border-radius: 3px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 3px; width: 0%;
+  transition: width .3s ease;
+}
+.spinner {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Tables ───────────────────────────────────────────────────────────────── */
+.table-wrap {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: auto; max-height: calc(100vh - 340px);
+  background: var(--surface);
+}
+
+.video-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.video-table thead {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--surface2);
+}
+.video-table th {
+  padding: 10px 12px; text-align: left;
+  color: var(--text-dim); font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.video-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.4;
+}
+.video-table tbody tr:last-child td { border-bottom: none; }
+.video-table tbody tr:hover td { background: var(--surface2); }
+
+/* Column widths */
+.col-check  { width: 36px; text-align: center; }
+.col-num    { width: 44px; text-align: right; color: var(--text-dim); }
+.col-title  { min-width: 180px; max-width: 260px; }
+.col-desc   { min-width: 200px; }
+.col-kw     { min-width: 160px; }
+.col-price     { width: 60px; text-align: right; color: var(--text-dim); }
+.col-views     { width: 70px; text-align: right; color: var(--text-dim); }
+.col-purchases { width: 80px; text-align: right; color: var(--text-dim); }
+.col-date      { width: 96px; white-space: nowrap; color: var(--text-dim); }
+.col-url    { min-width: 120px; max-width: 200px; }
+.col-status { width: 100px; }
+.col-filename { min-width: 200px; }
+
+td.col-title { font-weight: 600; }
+td.col-desc,
+td.col-kw   { color: var(--text-dim); font-size: 12px; }
+
+/* Truncated cell */
+.cell-truncate {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden; white-space: pre-wrap; word-break: break-word;
+}
+
+/* URL cell */
+.url-cell a {
+  font-size: 11px; word-break: break-all;
+  color: var(--info);
+}
+.url-missing { color: var(--error); font-size: 11px; font-style: italic; }
+
+/* Status badges */
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 12px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-pending   { background: rgba(136,136,160,.15); color: var(--text-dim); }
+.badge-fetching  { background: rgba(80,144,240,.15);  color: var(--info); }
+.badge-ready     { background: rgba(78,203,113,.15);  color: var(--success); }
+.badge-no-url    { background: rgba(240,80,80,.15);   color: var(--error); }
+.badge-queued    { background: rgba(240,192,64,.15);  color: var(--warning); }
+.badge-active    { background: rgba(80,144,240,.15);  color: var(--info); }
+.badge-done      { background: rgba(78,203,113,.15);  color: var(--success); }
+.badge-error     { background: rgba(240,80,80,.15);   color: var(--error); }
+
+/* ─── Download Stats ───────────────────────────────────────────────────────── */
+.download-stats {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.stat-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 100px;
+}
+.stat-num { font-size: 32px; font-weight: 800; color: var(--accent); }
+.stat-lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; }
+
+.muted { color: var(--text-dim); font-size: 13px; }
+
+/* ─── Per-row Re-fetch button ───────────────────────────────────────────────── */
+.col-refetch { width: 32px; text-align: center; }
+.btn-refetch {
+  background: none; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--text-dim); cursor: pointer; font-size: 14px; line-height: 1;
+  padding: 2px 5px; transition: color .15s, border-color .15s;
+}
+.btn-refetch:hover  { color: var(--accent); border-color: var(--accent); }
+.btn-refetch:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ─── Per-row re-download button ────────────────────────────────────────────── */
+.btn-redownload {
+  background: none; border: 1px solid var(--border); border-radius: 4px;
+  color: var(--text-dim); cursor: pointer; font-size: 13px; line-height: 1;
+  padding: 2px 6px; margin-left: 6px; transition: color .15s, border-color .15s;
+}
+.btn-redownload:hover { color: var(--warning); border-color: var(--warning); }
+
+/* ─── Per-row download progress ────────────────────────────────────────────── */
+.dl-progress-wrap {
+  margin-top: 5px; height: 4px; background: var(--surface2);
+  border-radius: 2px; overflow: hidden; width: 100%;
+}
+.dl-progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 2px; width: 0%;
+  transition: width .2s ease;
+}
+.dl-progress-indeterminate {
+  width: 40% !important;
+  animation: dl-slide 1.2s ease-in-out infinite;
+}
+@keyframes dl-slide {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+/* ─── Download Options ─────────────────────────────────────────────────────── */
+.download-options {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px;
+}
+.option-label { font-size: 13px; color: var(--text-dim); white-space: nowrap; }
+
+/* ─── Delete phase ──────────────────────────────────────────────────────────── */
+.col-action { width: 180px; }
+.btn-danger {
+  padding: 5px 12px; border-radius: var(--radius);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  background: rgba(240,80,80,.15); color: var(--error);
+  border: 1px solid rgba(240,80,80,.3);
+  transition: background .15s, border-color .15s;
+}
+.btn-danger:hover { background: rgba(240,80,80,.3); border-color: var(--error); }
+.btn-danger:disabled { opacity: .4; cursor: not-allowed; }
+
+/* Clickable phase dots */
+.phase-dot.reachable { cursor: pointer; }
+.phase-dot.reachable:hover { opacity: .8; }
+
+/* ─── Account Deletion ─────────────────────────────────────────────────────── */
+.btn-request-deletion {
+  display: inline-block;
+  padding: 9px 18px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600;
+  background: rgba(240,80,80,.15); color: var(--error);
+  border: 1px solid rgba(240,80,80,.4);
+  text-decoration: none;
+  transition: background .15s, border-color .15s;
+}
+.btn-request-deletion:hover { background: rgba(240,80,80,.28); border-color: var(--error); }
+
+/* ─── Login Check (Phase 1) ─────────────────────────────────────────────────── */
+.login-check-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 10px 14px;
+  margin-top: 16px; font-size: 13px;
+}
+.login-status-icon { font-size: 16px; flex-shrink: 0; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* ─── Social Share (Phase 5) ────────────────────────────────────────────────── */
+.social-share {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  max-width: 480px;
+}
+.social-share h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.social-share p  { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
+.social-share-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
