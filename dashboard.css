@@ -329,12 +329,12 @@ td.col-kw   { color: var(--text-dim); font-size: 12px; }
   padding-top: 28px;
   border-top: 1px solid var(--border);
 }
-.social-share h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.social-share p  { color: var(--text-dim); font-size: 13px; margin-bottom: 20px; }
+.social-share h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; text-align: center; }
+.social-share p  { color: var(--text-dim); font-size: 13px; margin-bottom: 20px; text-align: center; }
 
-.social-share-cards { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+.social-share-cards { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; justify-content: center; }
 
-.share-card { display: flex; flex-direction: column; gap: 10px; }
+.share-card { display: flex; flex-direction: column; gap: 10px; align-items: center; }
 .share-card-btn { width: 100%; }
 
 /* Tweet preview */
@@ -362,8 +362,8 @@ td.col-kw   { color: var(--text-dim); font-size: 12px; }
 }
 
 /* Instagram story preview */
-.share-preview-insta { width: 135px; }
-#insta-story-preview { display: block; width: 135px; height: 240px; }
+.share-preview-insta { width: 270px; }
+#insta-story-preview { display: block; width: 270px; height: 480px; }
 
 /* ─── Scrollbar ────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }

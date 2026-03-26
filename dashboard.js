@@ -102,9 +102,9 @@ document.getElementById('btn-fetch').addEventListener('click', async () => {
   enrichedVideos = allVideos.map(v => ({ ...v }));
   await chrome.storage.local.set({ mvdl_allVideos: allVideos, mvdl_details: {} });
   setStatus(`Catalogue fetched. Now click "Fetch Details from Edit Pages →" to get descriptions, keywords, and download links.`, `${allVideos.length} videos found`);
-  // Reset Proceed to Downloads when catalogue is re-fetched
+  // Show Proceed to Downloads — details not required, but will warn if missing
   const proceedBtn = document.getElementById('btn-proceed-downloads');
-  proceedBtn.hidden = true;
+  proceedBtn.hidden = false;
   proceedBtn.disabled = true;
 
   renderPhase2Table(allVideos);
@@ -161,16 +161,16 @@ async function doRescan(triggerBtn) {
   renderPhase2Table(enrichedVideos);
   setPhase(2);
 
-  const withDetails = enrichedVideos.filter(v => v.downloadUrl).length;
+  document.getElementById('btn-proceed-downloads').hidden = false;
+  const withDetails = enrichedVideos.filter(v => v.title && v.price && v.views && v.purchases && v.publishedAt && v.description && v.keywords && v.downloadUrl).length;
   if (withDetails > 0) {
-    document.getElementById('btn-proceed-downloads').hidden = false;
     // Restore re-fetch button style since we have existing details
     const fetchBtn = document.getElementById('btn-fetch-details');
     fetchBtn.textContent = 'Re-fetch Details →';
     fetchBtn.classList.remove('btn-primary');
     fetchBtn.classList.add('btn-refetch-details');
-    updateSelectionCount();
   }
+  updateSelectionCount();
 
   setStatus(
     `Re-scan complete — ${updatedCount} matched, ${addedCount} new`,
@@ -386,6 +386,18 @@ document.getElementById('btn-proceed-downloads').addEventListener('click', () =>
   downloadVideos = source.filter(v => checkedIds.has(v.id));
 
   if (downloadVideos.length === 0) { alert('No videos selected.'); return; }
+
+  const isReady = v => v.title && v.price && v.views && v.purchases &&
+                       v.publishedAt && v.description && v.keywords && v.downloadUrl;
+  const notReady = downloadVideos.filter(v => !isReady(v)).length;
+  if (notReady > 0) {
+    const ok = confirm(
+      `${notReady} of ${downloadVideos.length} selected video${downloadVideos.length !== 1 ? 's' : ''} ` +
+      `aren't ready yet — details haven't been fully fetched and they'll be skipped during download.\n\n` +
+      `Go back and click "Fetch Details" first, or continue and those videos will be skipped.`
+    );
+    if (!ok) return;
+  }
 
   completedDownloads = [];
   renderPhase3Table(downloadVideos);
@@ -849,7 +861,7 @@ document.getElementById('btn-go-close-account').addEventListener('click', () => 
 function getTweetText() {
   const count = allVideos.length;
   const countStr = count > 0 ? `${count} video${count !== 1 ? 's' : ''}` : 'my content';
-  return `Just deleted ${countStr} from ManyVids and requested account deletion. Taking back control of my content 💜\n\nUsed MV Divest to back everything up first.`;
+  return `Just deleted ${countStr} from ManyVids and requested account deletion. Taking back control of my content 💜\n\nCheck my other sites to keep up with me — I'm not going anywhere!\n\nUsed MV Divest to back everything up first: https://github.com/queueingqt/MVdivest/releases`;
 }
 
 function drawStoryCanvas(canvas) {
@@ -921,21 +933,29 @@ function drawStoryCanvas(canvas) {
     ctx.fillText('Backed up & removed from ManyVids', W / 2, 1150);
   }
 
+  // "Check my other sites" callout
+  ctx.fillStyle = '#e8e8ef';
+  ctx.font = `bold 58px 'Helvetica Neue', Arial, sans-serif`;
+  ctx.fillText('Check my other sites —', W / 2, 1360);
+  ctx.fillStyle = '#8888a0';
+  ctx.font = `52px 'Helvetica Neue', Arial, sans-serif`;
+  ctx.fillText("I'm not going anywhere! 💜", W / 2, 1445);
+
   // Branding block
   ctx.fillStyle = '#22222a';
-  roundRect(ctx, 190, 1560, W - 380, 180, 24);
+  roundRect(ctx, 190, 1530, W - 380, 220, 24);
   ctx.fill();
   ctx.strokeStyle = '#2e2e38';
   ctx.lineWidth = 2;
-  roundRect(ctx, 190, 1560, W - 380, 180, 24);
+  roundRect(ctx, 190, 1530, W - 380, 220, 24);
   ctx.stroke();
 
   ctx.fillStyle = '#e05cbf';
   ctx.font = `bold 62px 'Helvetica Neue', Arial, sans-serif`;
-  ctx.fillText('MV Divest', W / 2, 1660);
+  ctx.fillText('MV Divest', W / 2, 1630);
   ctx.fillStyle = '#8888a0';
   ctx.font = `40px 'Helvetica Neue', Arial, sans-serif`;
-  ctx.fillText('manyvids content backup tool', W / 2, 1720);
+  ctx.fillText('manyvids content backup tool', W / 2, 1690);
 }
 
 function renderSocialPreviews() {
@@ -1196,15 +1216,15 @@ async function loadFromStorage() {
   renderPhase2Table(enrichedVideos);
   setPhase(2);
 
-  const withDetails = enrichedVideos.filter(v => v.downloadUrl).length;
+  const withDetails = enrichedVideos.filter(v => v.title && v.price && v.views && v.purchases && v.publishedAt && v.description && v.keywords && v.downloadUrl).length;
+  document.getElementById('btn-proceed-downloads').hidden = false;
   if (withDetails > 0) {
-    document.getElementById('btn-proceed-downloads').hidden = false;
     const fetchBtn = document.getElementById('btn-fetch-details');
     fetchBtn.textContent = 'Re-fetch Details →';
     fetchBtn.classList.remove('btn-primary');
     fetchBtn.classList.add('btn-refetch-details');
-    updateSelectionCount();
   }
+  updateSelectionCount();
   setStatus(`Restored from cache — ${allVideos.length} videos`, `${withDetails} with details`);
   return true;
 }
